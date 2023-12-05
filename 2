@@ -1,0 +1,92 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class StopwatchApp extends JFrame implements ActionListener {
+    private JLabel timeLabel;
+    private JButton startButton, stopButton, resetButton;
+    private Timer timer;
+    private int seconds = 0;
+
+    public StopwatchApp() {
+        setTitle("Stopwatch");
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        timeLabel = new JLabel("0:00", JLabel.CENTER);
+        timeLabel.setFont(new Font("Arial", Font.PLAIN, 40));
+
+        startButton = new JButton("Start");
+        stopButton = new JButton("Stop");
+        resetButton = new JButton("Reset");
+
+        startButton.addActionListener(this);
+        stopButton.addActionListener(this);
+        resetButton.addActionListener(this);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(startButton);
+        buttonPanel.add(stopButton);
+        buttonPanel.add(resetButton);
+
+        add(timeLabel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        timer = new Timer(1000, this);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == startButton) {
+            start();
+        } else if (e.getSource() == stopButton) {
+            stop();
+        } else if (e.getSource() == resetButton) {
+            reset();
+        } else if (e.getSource() == timer) {
+            updateTimer();
+        }
+    }
+
+    private void start() {
+        timer.start();
+        startButton.setEnabled(false);
+        stopButton.setEnabled(true);
+        resetButton.setEnabled(true);
+    }
+
+    private void stop() {
+        timer.stop();
+        startButton.setEnabled(true);
+        stopButton.setEnabled(false);
+        resetButton.setEnabled(true);
+    }
+
+    private void reset() {
+        timer.stop();
+        seconds = 0;
+        updateTimerDisplay();
+        startButton.setEnabled(true);
+        stopButton.setEnabled(false);
+        resetButton.setEnabled(false);
+    }
+
+    private void updateTimer() {
+        seconds++;
+        updateTimerDisplay();
+    }
+
+    private void updateTimerDisplay() {
+        int minutes = seconds / 60;
+        int remainingSeconds = seconds % 60;
+        timeLabel.setText(String.format("%d:%02d", minutes, remainingSeconds));
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            StopwatchApp stopwatch = new StopwatchApp();
+            stopwatch.setVisible(true);
+        });
+    }
+}
