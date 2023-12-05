@@ -1,0 +1,119 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class CalculatorApp extends JFrame implements ActionListener {
+    private JTextField textField;
+    private String operator;
+    private double num1, num2, result;
+
+    public CalculatorApp() {
+        setTitle("Simple Calculator");
+        setSize(300, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        textField = new JTextField();
+        textField.setFont(new Font("Arial", Font.PLAIN, 20));
+        textField.setHorizontalAlignment(JTextField.RIGHT);
+        textField.setEditable(false);
+
+        add(textField, BorderLayout.NORTH);
+        add(createButtonPanel(), BorderLayout.CENTER);
+    }
+
+    private JPanel createButtonPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(4, 4, 10, 10));
+
+        String[] buttonLabels = {
+                "7", "8", "9", "/",
+                "4", "5", "6", "*",
+                "1", "2", "3", "-",
+                "0", "C", "=", "+"
+        };
+
+        for (String label : buttonLabels) {
+            JButton button = new JButton(label);
+            button.setFont(new Font("Arial", Font.PLAIN, 18));
+            button.addActionListener(this);
+            panel.add(button);
+        }
+
+        return panel;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+
+        switch (command) {
+            case "C":
+                clear();
+                break;
+            case "=":
+                calculate();
+                break;
+            default:
+                handleNumberOrOperator(command);
+        }
+    }
+
+    private void clear() {
+        textField.setText("");
+        operator = null;
+        num1 = num2 = result = 0;
+    }
+
+    private void calculate() {
+        num2 = Double.parseDouble(textField.getText());
+
+        switch (operator) {
+            case "+":
+                result = num1 + num2;
+                break;
+            case "-":
+                result = num1 - num2;
+                break;
+            case "*":
+                result = num1 * num2;
+                break;
+            case "/":
+                if (num2 != 0) {
+                    result = num1 / num2;
+                } else {
+                    JOptionPane.showMessageDialog(this, "Cannot divide by zero", "Error", JOptionPane.ERROR_MESSAGE);
+                    clear();
+                    return;
+                }
+                break;
+        }
+
+        textField.setText(String.valueOf(result));
+        operator = null;
+    }
+
+    private void handleNumberOrOperator(String value) {
+        if (value.matches("[0-9]")) {
+            textField.setText(textField.getText() + value);
+        } else {
+            if (operator == null) {
+                num1 = Double.parseDouble(textField.getText());
+                operator = value;
+                textField.setText("");
+            } else {
+                calculate();
+                operator = value;
+                num1 = result;
+                textField.setText("");
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            CalculatorApp calculator = new CalculatorApp();
+            calculator.setVisible(true);
+        });
+    }
+}
