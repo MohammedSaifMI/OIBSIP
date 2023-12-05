@@ -1,0 +1,108 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class conver extends JFrame implements ActionListener {
+    private JTextField inputField;
+    private JLabel resultLabel;
+    private JButton convertButton;
+    private JComboBox<String> fromUnitSelector;
+    private JComboBox<String> toUnitSelector;
+
+    public conver() {
+        setTitle("Multi-Unit Converter");
+        setSize(300, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        inputField = new JTextField();
+        resultLabel = new JLabel("Result: ");
+        convertButton = new JButton("Convert");
+        fromUnitSelector = new JComboBox<>(new String[]{"Centimeters", "Meters", "Millimeters", "Grams", "Liters"});
+        toUnitSelector = new JComboBox<>(new String[]{"Centimeters", "Meters", "Millimeters", "Grams", "Liters"});
+
+        convertButton.addActionListener(this);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(5, 1));
+        panel.add(inputField);
+        panel.add(fromUnitSelector);
+        panel.add(toUnitSelector);
+        panel.add(convertButton);
+        panel.add(resultLabel);
+
+        add(panel);
+
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == convertButton) {
+            convert();
+        }
+    }
+
+    private void convert() {
+        try {
+            double inputValue = Double.parseDouble(inputField.getText());
+            String fromUnit = (String) fromUnitSelector.getSelectedItem();
+            String toUnit = (String) toUnitSelector.getSelectedItem();
+            double result;
+
+            if ("Centimeters".equals(fromUnit) && "Meters".equals(toUnit)) {
+                result = convertCentimetersToMeters(inputValue);
+                resultLabel.setText("Result: " + result + " meters");
+            } else if ("Meters".equals(fromUnit) && "Centimeters".equals(toUnit)) {
+                result = convertMetersToCentimeters(inputValue);
+                resultLabel.setText("Result: " + result + " centimeters");
+            } else if ("Centimeters".equals(fromUnit) && "Millimeters".equals(toUnit)) {
+                result = convertCentimetersToMillimeters(inputValue);
+                resultLabel.setText("Result: " + result + " millimeters");
+            } else if ("Millimeters".equals(fromUnit) && "Centimeters".equals(toUnit)) {
+                result = convertMillimetersToCentimeters(inputValue);
+                resultLabel.setText("Result: " + result + " centimeters");
+            } else if ("Grams".equals(fromUnit) && "Liters".equals(toUnit)) {
+                result = convertGramsToLiters(inputValue);
+                resultLabel.setText("Result: " + result + " liters");
+            } else if ("Liters".equals(fromUnit) && "Grams".equals(toUnit)) {
+                result = convertLitersToGrams(inputValue);
+                resultLabel.setText("Result: " + result + " grams");
+            } else {
+                resultLabel.setText("Unsupported conversion");
+            }
+        } catch (NumberFormatException ex) {
+            resultLabel.setText("Invalid input");
+        }
+    }
+
+    private double convertCentimetersToMeters(double centimeters) {
+        return centimeters / 100.0;
+    }
+
+    private double convertMetersToCentimeters(double meters) {
+        return meters * 100.0;
+    }
+
+    private double convertCentimetersToMillimeters(double centimeters) {
+        return centimeters * 10.0;
+    }
+
+    private double convertMillimetersToCentimeters(double millimeters) {
+        return millimeters / 10.0;
+    }
+
+    private double convertGramsToLiters(double grams) {
+        return grams / 1000.0;
+    }
+
+    private double convertLitersToGrams(double liters) {
+        return liters * 1000.0;
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            conver converter = new conver();
+            converter.setVisible(true);
+        });
+    }
+}
